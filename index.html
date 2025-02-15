@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>足球网站</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 添加Google Fonts链接 -->
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: lightgreen;
+        }
+
+     .cover {
+            height: auto;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+        }
+
+     .cover h1 {
+            font-size: 36px;
+            margin-bottom: 30px; /* 增大标题与下方元素的距离 */
+        }
+
+     .nav-buttons button {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #006400; /* 深绿色按钮 */
+            color: white;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+     .nav-buttons button:hover {
+            background-color: #004d00; /* 鼠标悬停时颜色更深 */
+        }
+
+     .content {
+            display: none;
+            padding: 20px;
+        }
+
+        /* 添加音频控制按钮样式 */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .audio-control:hover {
+            transform: scale(1.1);
+        }
+        
+        .audio-control.muted::after {
+            content: '🔇';
+        }
+        
+        .audio-control::after {
+            content: '🔊';
+            font-size: 20px;
+        }
+
+        .schedule-image, .scorer-image {
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+            max-width: 70%; /* 减小容器宽度 */
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        
+        .schedule-image img, .scorer-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .schedule-image:hover, .scorer-image:hover {
+            transform: translateY(-5px);
+        }
+        
+        .schedule-image:hover img, .scorer-image:hover img {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .stats-images {
+            display: flex;
+            justify-content: space-between;
+            max-width: 70%;
+            margin: 20px auto;
+            gap: 15px;  /* 减小间距以适应三张图片 */
+        }
+
+        .assist-image, .saves-image {
+            flex: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .assist-image img, .saves-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .assist-image:hover, .saves-image:hover {
+            transform: translateY(-5px);
+        }
+
+        .assist-image:hover img, .saves-image:hover img {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .trophy-image {
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+            max-width: 70%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        
+        .trophy-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .trophy-image:hover {
+            transform: translateY(-5px);
+        }
+        
+        .trophy-image:hover img {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        /* 添加返回顶部按钮样式 */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 80px; /* 位于音乐按钮右侧 */
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px) rotate(360deg);
+            background: #006400;
+            color: white;
+        }
+        
+        .back-to-top::after {
+            content: '⚽';
+            font-size: 20px;
+        }
+
+        .player-stats-slider {
+            max-width: 70%;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .slider-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.3) 100%
+            );
+            transform: skewX(-25deg);
+            transition: all 0.75s;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .slider-container:hover::before {
+            animation: shine 0.75s;
+        }
+
+        .slider-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                to left,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.3) 100%
+            );
+            transform: skewX(25deg);
+            transition: all 0.75s;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .slider-container:not(:hover)::after {
+            animation: shine-reverse 0.75s;
+        }
+
+        @keyframes shine {
+            100% {
+                left: 125%;
+                opacity: 1;
+            }
+        }
+
+        @keyframes shine-reverse {
+            0% {
+                right: -75%;
+                opacity: 0;
+            }
+            100% {
+                right: 125%;
+                opacity: 1;
+            }
+        }
+
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 400px;
+        }
+
+        .slider-image {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .slider-button:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        /* 添加视频相关样式 */
+        .video-container {
+            max-width: 70%;
+            margin: 20px auto;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .video-card video {
+            width: 100%;
+            display: block;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-info h3 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .video-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .video-description {
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        .tactics-title {
+            color: #006400;  /* 深绿色 */
+            font-size: 24px;  /* 大字 */
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .tactics-subtitle {
+            color: #333;     /* 黑色 */
+            font-size: 18px;  /* 中字 */
+            margin: 15px 0;
+        }
+
+        .tactics-content {
+            max-width: 80%;
+            margin: 20px auto;
+            line-height: 1.6;
+        }
+
+        .tactics-content h3 {
+            color: #006400;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .tactics-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        /* 修改商品卡片和图片样式 */
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;  /* 固定高度 */
+            object-fit: contain;  /* 保持图片比例完整显示 */
+            margin-bottom: 15px;
+        }
+
+        .product-info {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* 其他样式保持不变 */
+        .quantity-control {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .buy-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        /* 修改购物车中的图片样式 */
+        .cart-item img {
+            width: 60px;  /* 减小宽度 */
+            height: 60px; /* 保持正方形 */
+            object-fit: contain; /* 保持图片比例 */
+            margin-right: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #e53935;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        /* 添加支付成功提示样式 */
+        .payment-success {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 100, 0, 0.9);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .payment-success.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 添加音频元素 -->
+    <audio id="bgMusic" loop>
+        <source src="football.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素.
+    </audio>
+    
+    <!-- 添加音频控制按钮 -->
+    <div class="audio-control" onclick="toggleMusic()"></div>
+    
+    <!-- 在body标签内添加购物车按钮和面板 -->
+    <div class="cart-button" onclick="toggleCart()">
+        🛒 <span class="cart-count">0</span>
+    </div>
+
+    <div class="cart-panel">
+        <div class="cart-header">
+            <h3>🛒 购物车</h3>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items">
+            <!-- 购物车商品会动态添加到这里 -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <div class="total-row">商品总额: <span class="subtotal-price">¥0</span></div>
+                <div class="discount-info"></div>
+                <div class="total-row final-total">实付金额: <span class="total-price">¥0</span></div>
+            </div>
+            <button class="checkout-button" onclick="showPaymentSuccess()">立即结算</button>
+        </div>
+        <!-- 添加支付成功提示元素 -->
+        <div class="payment-success">支付成功！感谢您的购买</div>
+    </div>
+
+    <!-- 在body标签内添加支付二维码弹窗 -->
+    <div class="payment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>扫码支付</h3>
+                <button class="close-modal" onclick="closePaymentModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-success">支付成功! 感谢您的购买</div>
+                <p class="payment-amount">支付金额: <span class="modal-total">¥0</span></p>
+                <div class="qr-codes">
+                    <div class="qr-code">
+                        <img src="wechat-qr.jpg" alt="微信收款码">
+                        <div class="qr-code-label">微信支付</div>
+                    </div>
+                    <div class="qr-code">
+                        <img src="alipay-qr.jpg" alt="支付宝收款码">
+                        <div class="qr-code-label">支付宝</div>
+                    </div>
+                </div>
+                <p class="payment-tip">请使用微信或支付宝扫描二维码完成支付</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cover" style="background-image: url('your_cover_image.jpg');">
+        <h1>足球世界<span class="football-emoji">⚽</span></h1>
+        <div class="nav-buttons">
+            <button onclick="showPage('news')">新闻中心</button>
+            <button onclick="showPage('matches')">赛事全览</button>
+            <button onclick="showPage('teams')">球队宇宙</button>
+            <button onclick="showPage('players')">球星图鉴</button>
+            <button onclick="showPage('tactics')">战术研究院</button>
+            <button onclick="showPage('shop')">选购中心</button>
+            <button onclick="showPage('aboutMe')">关于我</button>
+        </div>
+    </div>
+
+    <div id="news" class="content">
+        <h1>新闻中心</h1>
+        <h2>足协新闻</h2>
+        <p>
+            - 董方雨, 谢丽君将执裁男子亚冠联赛淘汰赛比赛 (2025-02-10)
+        </p>
+        <p>
+            - 2025超级杯申花成功卫冕 史诗级对决奏响新赛季强劲序曲 (2025-02-08)
+        </p>
+        <p>
+            - 2025女五亚洲杯分组, 赛程敲定 12队竞争女五世界杯入场券 (2025-02-07)
+        </p>
+        <p>
+            - 2025年第一期亚足联/中国足协女足A级, B级教练培训班在云南昆明举办 (2025-02-06)
+        </p>
+        <p>
+            - 中国足球协会向全国人民拜年 (2025-01-28)
+        </p>
+        <p>
+            - 中国足协与北京体育大学共建足球学院工作会议在京举行 (2025-01-27)
+        </p>
+        <h2>国内足球</h2>
+        <p>
+            - U20男足出征亚洲杯, 剑指世青赛 (2025-02-10)
+        </p>
+        <p>
+            - U20亚洲杯, 都在"卷"留洋 (2025-02-09)
+        </p>
+        <p>
+            - 五次捧杯! 超级逆转, "超级"申花! (2025-02-08)
+        </p>
+        <p>
+            - 开春第一战: "后奥斯卡时代"的首场上海德比 (2025-02-07)
+        </p>
+        <p>
+            - 源头直采, 泰山两位新外援抵达济南 (2025-01-26)
+        </p>
+        <p>
+            - 斯卢茨基"定调"申花2025: 中超是重中之重 (2025-01-25)
+        </p>
+        <h2>最新赛事</h2>
+        <p>
+            - 足总杯: 曼联2-1莱斯特城晋级, 普利茅斯1-0利物浦爆冷晋级.
+        </p>
+        <p>
+            - 西甲: 皇家马德里1-1马德里竞技, 巴塞罗那4-1塞维利亚.
+        </p>
+        <p>
+            - 法甲: 巴黎圣日耳曼4-1摩纳哥, 尼斯2-0朗斯.
+        </p>
+        <p>
+            - 德甲: 拜仁慕尼黑3-0云达不莱梅, 多特蒙德1-2斯图加特.
+        </p>
+        <h2>国际足坛</h2>
+        <h3>转会</h3>
+        <p>
+            - 国际足联注册禁令: 国际足联对违反其球员注册, 转会等规则的俱乐部实施转会禁令, 禁止其转会, 注册新球员, 直到禁令解除.
+        </p>
+        <h3>重大事件</h3>
+        <p>
+            - 2025冬季转会窗: 沙特联赛的金元攻势成为焦点, 阿斯顿维拉的杜兰以7700万欧元转会至利雅得胜利成为冬窗标王, 葡超波尔图的加莱诺以5000万欧元加盟吉达国民.
+        </p>
+        <h2>青训动态: 青少年足球发展</h2>
+        <p>
+            - 中国足球少年赴葡培训: "2025欧亚中国青少年本菲卡足球培训活动"于2025年1月11日至1月26日在葡萄牙里斯本举办, 中国足球少年接受本菲卡教练指导, 并与里斯本本地青年球队进行友谊赛, 以4:3获胜. 本菲卡俱乐部计划在中国建立足球学校, 探索文化交流与足球教育融合模式.
+        </p>
+        <h2>特色内容</h2>
+        <p>
+            - 抖音足球嘉年华佛山站: 2月6日 - 9日, 抖音足球嘉年华佛山站淘汰赛, 总决赛在三水云秀山体育场举行. 球场被装点成花灯球场, 四周看台上有造型各异的狮头灯饰, 展示湾区岭南特色文化. 赛场外有抖音足球嘉年华创意集市, 30多个特色摊位集结地域美食, 创新小吃, 怀旧游戏, 文创等多种元素. 2月9日决赛夜, 奥运冠军谢思埸, 亚洲飞人苏炳添等明星将带来民俗表演, 林晓峰将演唱经典粤语老歌, 还有50多位优质创作者到场观演, 同时将有民俗方阵巡游, 涵盖醒狮舞龙, 英歌舞, 粤剧戏曲等多种传统艺术和地方文化.
+        </p>
+    </div>
+
+    <div id="matches" class="content">
+        <h1>赛事全览</h1>
+        <p>联赛专区</p>
+        <p>完整赛程表 (可筛选日期/球队)</p>
+        <div class="schedule-image">
+            <a href="https://www.thecfa.cn/saishi/" target="_blank">
+                <img src="schedule.jpg" alt="赛程表">
+            </a>
+        </div>
+        <p>数据可视化</p>
+        <p>射手榜TOP10 (带进球类型统计)</p>
+        <div class="scorer-image">
+            <a href="https://www.dongqiudi.com/data" target="_blank">
+                <img src="scorers.jpg" alt="射手榜">
+            </a>
+        </div>
+        <p>助攻榜/扑救榜 (门将数据)</p>
+        <div class="stats-images">
+            <div class="assist-image">
+                <a href="https://www.dongqiudi.com/data/assists" target="_blank">
+                    <img src="saves1.jpg" alt="扑救榜1">
+                </a>
+            </div>
+            <div class="saves-image">
+                <a href="https://www.dongqiudi.com/data/goalkeepers" target="_blank">
+                    <img src="saves2.jpg" alt="扑救榜2">
+                </a>
+            </div>
+            <div class="saves-image">
+                <a href="https://www.dongqiudi.com/data/goalkeepers/clean-sheets" target="_blank">
+                    <img src="saves3.jpg" alt="扑救榜3">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="teams" class="content">
+        <h1>球队宇宙</h1>
+        <h2>球队档案</h2>
+        <h3>格兰多利俱乐部</h3>
+        <p>
+            - 简介: 梅西4岁加入的第一家俱乐部, 由其父亲担任教练, 位于阿根廷圣菲省罗萨里奥, 是梅西足球生涯的起点.
+        </p>
+
+        <h3>巴塞罗那足球俱乐部</h3>
+        <p>
+            - 加入时间: 2000年加入青训梯队, 2004年正式进入一线队.
+        </p>
+        <p>
+            - 成就: 梅西效力期间, 帮助球队获得4次欧冠冠军, 10次西甲冠军, 7次国王杯冠军, 8次西班牙超级杯冠军, 3次欧洲超级杯冠军和3次世俱杯冠军.
+        </p>
+        <p>
+            - 数据: 总计出场778次, 进球672个, 助攻288次. 
+        </p>
+
+        <h3>巴黎圣日耳曼足球俱乐部</h3>
+        <p>
+            - 加入时间: 2021年8月.
+        </p>
+        <p>
+            - 成就: 在巴黎圣日耳曼的两个赛季, 梅西帮助球队夺得2次法甲联赛冠军和1次法国超级杯冠军.
+        </p>
+        <p>
+            - 数据: 出场75次, 打进32球, 助攻34次. 
+        </p>
+
+        <h3>迈阿密国际足球俱乐部</h3>
+        <p>
+            - 加入时间: 2023年6月.
+        </p>
+        <p>
+            - 成就: 帮助球队获得2023年北美联赛杯冠军和2024年美职联常规赛冠军.
+        </p>
+        <p>
+            - 数据: 截至2024年7月20日, 出场29次, 进球25个, 助攻16次. 
+        </p>
+
+        <h3>阿根廷国家队</h3>
+        <p>
+            - 加入时间: 2005年开始代表阿根廷国家队参赛.
+        </p>
+        <p>
+            - 成就: 获得2008年北京奥运会男足冠军, 2021年美洲杯冠军, 2022年世界杯冠军, 2022年南美欧洲超级杯冠军以及2024年美洲杯冠军.
+        </p>
+        <p>
+            - 数据: 截至2024年7月, 共出场187次, 打进109球, 助攻55次.
+        </p>
+
+        <h2>成立年份/主场/队徽演变</h2>
+        <p>
+            - 成立年份: 1893年
+        </p>
+        <p>
+            - 主场: 阿根廷国家队并没有严格意义上专属于自己的固定主场, 但一般认为纪念碑球场可作为其主场赛事的主要举办场地, 它位于阿根廷首都布宜诺斯艾利斯.
+        </p>
+        <h3>队徽演变:</h3>
+        <p>
+            - 1930年: 第一届世界杯时, 阿根廷球员胸前佩戴阿根廷国旗.
+        </p>
+        <p>
+            - 1934年: 在意大利世界杯上, 用代表阿根廷的大字母A代替国旗作为新徽章.
+        </p>
+        <p>
+            - 1958年: 瑞典世界杯开始使用带有国旗颜色的盾牌图标.
+        </p>
+        <p>
+            - 1966年: 英格兰世界杯上, 绿色的桂冠出现在队徽中, 字体设计回归原始版本.
+        </p>
+        <p>
+            - 1978年: 阿根廷举办世界杯, "AFA"的盾牌首次出现在球衣上.
+        </p>
+        <p>
+            - 1982年: 60年代的桂冠回归, 盾牌上增加了蓝色边框.
+        </p>
+        <p>
+            - 2006年: 德国世界杯期间, 队徽中首次增加纪念世界杯冠军的两颗金色五角星.
+        </p>
+        <p>
+            - 2019年: 推出简化版LOGO, 只保留"AFA"和两颗五角星组合.
+        </p>
+        <p>
+            - 2022年: 卡塔尔世界杯夺冠后, 队徽盾牌徽章的金色星星变为三颗, 中间大星星代表此次冠军, 两侧小星星分别纪念1978年和1986年的冠军.
+        </p>
+        <h2>历史荣誉陈列室</h2>
+        <p>
+            - 历史荣誉陈列室 (奖杯3D展示)
+        </p>
+        <!-- 添加荣誉陈列室图片链接 -->
+        <div class="trophy-image">
+            <a href="https://www.afa.com.ar/trofeos" target="_blank">
+                <img src="trophies.jpg" alt="阿根廷队荣誉陈列">
+            </a>
+        </div>
+    </div>
+
+    <div id="players" class="content">
+        <h1>球星图鉴</h1>
+        
+        <!-- 修改为单个视频展示 -->
+        <div class="player-showcase">
+            <h2>精彩时刻</h2>
+            <div class="video-container">
+                <div class="video-card">
+                    <video controls poster="messi-poster.jpg">
+                        <source src="messi-highlights.mp4" type="video/mp4">
+                        您的浏览器不支持视频播放.
+                    </video>
+                    <div class="video-info">
+                        <h3>梅西精彩集锦</h3>
+                        <p>阿根廷 | 前锋 | 迈阿密国际</p>
+                        <p class="video-description">
+                            利昂内尔·梅西, 被誉为"球王", 以其精湛的盘带技术, 出色的视野和令人难以置信的进球能力闻名于世.
+                            七次金球奖得主, 带领阿根廷队获得2022世界杯冠军.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>球员档案</h2>
+        <p>动态数据面板 (身高/年龄/惯用脚)</p>
+        <!-- 添加滑动图片展示区 -->
+        <div class="player-stats-slider">
+            <div class="slider-container">
+                <div class="slider-wrapper">
+                    <img src="stats1.jpg" alt="球员数据1" class="slider-image">
+                    <img src="stats2.jpg" alt="球员数据2" class="slider-image">
+                    <img src="stats3.jpg" alt="球员数据3" class="slider-image">
+                    <img src="stats4.jpg" alt="球员数据4" class="slider-image">
+                </div>
+                <button class="slider-button prev" onclick="moveSlider(-1)">❮</button>
+                <button class="slider-button next" onclick="moveSlider(1)">❮</button>
+                <div class="slider-dots">
+                    <span class="dot active" onclick="goToSlide(0)"></span>
+                    <span class="dot" onclick="goToSlide(1)"></span>
+                    <span class="dot" onclick="goToSlide(2)"></span>
+                    <span class="dot" onclick="goToSlide(3)"></span>
+                </div>
+            </div>
+        </div>
+        
+        <h2>专属内容</h2>
+        <p>经典比赛回顾 (名场面GIF合集)</p>
+        <!-- 添加视频展示区 -->
+        <div class="video-container">
+            <div class="video-card">
+                <video controls poster="worldcup-final.jpg">
+                    <source src="worldcup-final.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放.
+                </video>
+                <div class="video-info">
+                    <h3>经典比赛回顾 (名场面GIF合集)</h3>
+                </div>
+            </div>
+        </div>
+        <p>装备博物馆 (历代战靴展示)</p>
+        <div class="trophy-image">
+            <a href="https://www.adidas.com/football" target="_blank">
+                <img src="boots-history.jpg" alt="历代战靴展示">
+            </a>
+        </div>
+    </div>
+
+    <div id="shop" class="content">
+        <h1>选购中心</h1>
+        
+        <div class="shop-category">
+            <h2>足球专区</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <img src="ball.jpg" alt="官方比赛用球">
+                    <div class="product-info">
+                        <h3>2022世界杯官方比赛用球</h3>
+                        <p class="price">¥1085</p>
+                        <p class="description">采用最新科技，完美的气动性能</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" max="100" onchange="validateQuantity(this)">
+                            <button class="quantity-btn plus" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="buy-button" onclick="addToCart(this)" 
+                                data-price="1085" 
+                                data-name="2022世界杯官方比赛用球">加入购物车</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="ball2.jpg" alt="训练用球">
+                    <div class="product-info">
+                        <h3>专业训练足球</h3>
+                        <p class="price">¥299</p>
+                        <p class="description">耐磨防水，适合日常训练</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" max="100" onchange="validateQuantity(this)">
+                            <button class="quantity-btn plus" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="buy-button" onclick="addToCart(this)" 
+                                data-price="299" 
+                                data-name="专业训练足球">加入购物车</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="shop-category">
+            <h2>球衣专区</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <img src="jersey1.jpg" alt="国家队球衣">
+                    <div class="product-info">
+                        <h3>中国国家队主场球衣</h3>
+                        <p class="price">¥599</p>
+                        <p class="description">2025新款,龙年限定版</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" max="100" onchange="validateQuantity(this)">
+                            <button class="quantity-btn plus" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="buy-button" onclick="addToCart(this)" 
+                                data-price="599" 
+                                data-name="中国国家队主场球衣">加入购物车</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="jersey2.jpg" alt="俱乐部球衣">
+                    <div class="product-info">
+                        <h3>申花2025赛季主场球衣</h3>
+                        <p class="price">¥679</p>
+                        <p class="description">冠军纪念版，限量发售</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" max="100" onchange="validateQuantity(this)">
+                            <button class="quantity-btn plus" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="buy-button" onclick="addToCart(this)" 
+                                data-price="679" 
+                                data-name="申花2025赛季主场球衣">加入购物车</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="shop-category">
+            <h2>球鞋专区</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <img src="boots1.jpg" alt="专业球鞋">
+                    <div class="product-info">
+                        <h3>顶级专业足球鞋</h3>
+                        <p class="price">¥788</p>
+                        <p class="description">轻量化设计，完美触感</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" max="100" onchange="validateQuantity(this)">
+                            <button class="quantity-btn plus" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="buy-button" onclick="addToCart(this)" 
+                                data-price="788" 
+                                data-name="顶级专业足球鞋">加入购物车</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="boots2.jpg" alt="训练鞋">
+                    <div class="product-info">
+                        <h3>多功能训练鞋</h3>
+                        <p class="price">¥199</p>
+                        <p class="description">适合各种场地，耐磨防滑</p>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" max="100" onchange="validateQuantity(this)">
+                            <button class="quantity-btn plus" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <button class="buy-button" onclick="addToCart(this)" 
+                                data-price="199" 
+                                data-name="多功能训练鞋">加入购物车</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aboutMe" class="content">
+        <h1>关于作者</h1>
+        <div class="author-avatar">
+            <img src="xiaoman.jpg" alt="作者小满" class="avatar-img">
+            <div class="soccer-frame"></div>
+        </div>
+        <p>作者小满, 12岁, 一期学长, 喜好骑行, 游泳, 足球</p>
+    </div>
+
+    <div id="tactics" class="content">
+        <h1>战术研究院</h1>
+        <p class="tactics-title">比赛解构</p>
+        <p class="tactics-subtitle">阵型演化史 (从WM到4231)</p>
+        
+        <div class="tactics-content">
+            <h3>WM阵型 (英国)</h3>
+            <p>
+                1925年国际足联规定了越位规则, 随后就出现了WM阵型, 1+2332阵型, 这也是现代足球正式进入攻防平衡的时代, 进攻和防守端终于达成5+5的完美平衡, 随后的阵容基本都是从此发生演变.
+            </p>
+
+            <h3>334阵型 (匈牙利)</h3>
+            <p>
+                1953年当时的劲旅为了克服英国对的WM, 发明了这个阵型, 相比WM阵型球队的更注重球场的宽度, 而且更加注重边路进攻, 用这个阵容匈牙利所向披靡, 几乎囊括了当时所有的锦标, 包括世界杯, 欧洲杯, 奥运会等.
+            </p>
+
+            <h3>424阵型 (巴西)</h3>
+            <p>
+                南美霸主正式进入足坛的舞台, 巴西队内优秀的中前场球员多, 所以教练索性减少中场球员, 增加进攻端的人员, 由此诞生这个小蛮腰式的足球阵型, 这个阵型可以说式现代足球最成功的阵型之一, 巴西夺得了三届世界杯冠军.
+            </p>
+
+            <h3>433阵型 (德国)</h3>
+            <p>
+                高度发达的德国职业联赛, 竞争异常激烈, 而且相比脚法出众的巴西球员, 德国球员更擅长长传冲掉, 所以在巴西队阵型的基础上, 减少一名前锋增加一名中场, 这个阵容取得巨大的成功.
+            </p>
+
+            <h3>442阵型 (法国)</h3>
+            <p>
+                法国是非洲球员进入欧洲的窗口, 非洲球员体能优异, 身体强壮, 擅长跑动, 法国队利用这个优势进一步增加中场阵容, 得中场者的天下, 并利用边路快马的突破传中, 诞生了第一个《头球队》.
+            </p>
+
+            <h3>352阵型 (意大利)</h3>
+            <p>
+                意大利几乎是防守优异的代名词, 擅长防守的意大利队, 利用防守端能力强的优势, 放弃一名后卫, 增加一名中场, 由此攻防自如, 终于可以跟英格兰和法国较劲, 期间意大利夺得世界杯冠军, 欧洲杯冠军等荣誉.
+            </p>
+
+            <h3>4231阵型 (英格兰)</h3>
+            <p>
+                相比激烈的联赛, 英格兰队在世界杯不算成功, 联赛虽然有超一流的球员, 但是面对法国和意大利始终占不到便宜, 英格兰球员擅长身体对抗, 但是脚法不算细腻, 所以为了让防守更加稳固, 增加一个后腰, 由此诞生目前使用率最高的4231阵型, 4名后卫身前增加了2名后腰, 双层保险让前场球员更大胆的参与进攻.
+            </p>
+
+            <h3>总结</h3>
+            <p>
+                世界上没有完美的阵型, 只有完美的团队, 目前曼城等豪门球队都是352的阵型, 由于大手笔的投入, 后防线本身的实力出众, 并且中场球员的传控能力强, 导致球大部分时间都掌握在己方, 减少了防守端的压力.
+            </p>
+            <p>
+                中国目前大多数球队都是4231的阵型, 这个阵型几乎是平衡的完美代名词, 也是历史上最成功的阵型之一.
+            </p>
+        </div>
+    </div>
+
+    <div class="corner corner-top-left"></div>
+    <div class="corner corner-top-right"></div>
+    <div class="corner corner-bottom-left"></div>
+    <div class="corner corner-bottom-right"></div>
+    <div class="penalty-spot-top"></div>
+    <div class="penalty-spot-bottom"></div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>关于网站</h3>
+                <p>这是一个充满激情的足球爱好者网站, 致力于分享足球的快乐与精彩. 让我们一起感受足球的魅力, 体验这项运动带来的无限乐趣.</p>
+            </div>
+            <div class="footer-section">
+                <h3>友情链接</h3>
+                <div class="footer-links">
+                    <a href="https://www.thecfa.cn/xhxw/" target="_blank">中国足协</a>
+                    <a href="https://www.dongqiudi.com/" target="_blank">懂球帝</a>
+                    <a href="https://www.zuqiubao.info/" target="_blank">足球报</a>
+                    <a href="https://2050reunion.github.io/shiyanshi/" target="_blank">AI开窍实验室</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 小满的足球世界 | 快乐足球 激情人生</p>
+            <div class="footer-ball">⚽</div>
+        </div>
+    </footer>
+
+    <!-- 在body中添加返回顶部按钮 -->
+    <div class="back-to-top" onclick="scrollToTop()" title="返回顶部"></div>
+
+    <script>
+        // 添加音频控制功能
+        const bgMusic = document.getElementById('bgMusic');
+        const audioControl = document.querySelector('.audio-control');
+        let musicPlayed = false;
+        
+        // 页面加载完成后显示新闻中心
+        window.addEventListener('load', function() {
+            // 显示新闻中心页面
+            showPage('news');
+            
+            // 尝试自动播放音乐
+            const playPromise = bgMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    musicPlayed = true;
+                }).catch(error => {
+                    console.log("自动播放被阻止，需要用户交互才能播放");
+                    musicPlayed = false;
+                });
+            }
+        });
+        
+        // 切换音乐播放状态
+        function toggleMusic() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                audioControl.classList.remove('muted');
+                musicPlayed = true;
+            } else {
+                bgMusic.pause();
+                audioControl.classList.add('muted');
+                musicPlayed = false;
+            }
+        }
+        
+        // 监听页面可见性变化
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // 页面不可见时暂停音乐
+                if (!bgMusic.paused) {
+                    bgMusic.pause();
+                }
+            } else {
+                // 页面可见时，如果之前在播放则继续播放
+                if (musicPlayed) {
+                    bgMusic.play();
+                }
+            }
+        });
+        
+        function showPage(pageId) {
+            // 先淡出当前页面
+            const currentContent = document.querySelector('.content[style="display: block"]');
+            if (currentContent) {
+                currentContent.style.opacity = '0';
+                currentContent.style.transform = 'translateY(20px)';
+            }
+
+            // 创建足球元素
+            const ball = document.createElement('div');
+            ball.className = 'soccer-ball';
+            document.body.appendChild(ball);
+
+            // 创建球网效果
+            const net = document.createElement('div');
+            net.className = 'goal-net';
+            document.body.appendChild(net);
+
+            // 等待当前页面淡出
+            setTimeout(() => {
+                // 执行射门动画
+                ball.classList.add('shoot');
+                
+                // 动画结束后切换页面
+                setTimeout(() => {
+                    // 移除动画元素
+                    ball.remove();
+                    net.remove();
+                    
+                    // 隐藏所有页面
+                    const contents = document.querySelectorAll('.content');
+                    contents.forEach(content => {
+                        content.style.display = 'none';
+                        content.style.opacity = '0';
+                        content.style.transform = 'translateY(20px)';
+                    });
+
+                    // 显示新页面
+                    const newPage = document.getElementById(pageId);
+                    newPage.style.display = 'block';
+                    
+                    // 触发重排后再添加动画
+                    setTimeout(() => {
+                        newPage.style.opacity = '1';
+                        newPage.style.transform = 'translateY(0)';
+                    }, 50);
+                    
+                }, 800); // 增加动画时间
+            }, 300); // 等待当前页面淡出的时间
+        }
+
+        // 购物车相关变量和函数
+        let cartItems = [];
+        let cartCount = 0;
+
+        function toggleCart() {
+            const cartPanel = document.querySelector('.cart-panel');
+            cartPanel.classList.toggle('active');
+        }
+
+        function addToCart(button) {
+            const name = button.getAttribute('data-name');
+            const price = parseFloat(button.getAttribute('data-price'));
+            const quantity = parseInt(button.parentElement.querySelector('.quantity-control input').value);
+            const imgSrc = button.closest('.product-card').querySelector('img').src;
+            
+            // 检查商品是否已在购物车中
+            const existingItemIndex = cartItems.findIndex(item => item.name === name);
+            
+            if (existingItemIndex !== -1) {
+                // 如果商品已存在，更新数量
+                const newQuantity = cartItems[existingItemIndex].quantity + quantity;
+                if (newQuantity <= 100) {
+                    cartItems[existingItemIndex].quantity = newQuantity;
+                } else {
+                    alert('商品数量不能超过100件');
+                    return;
+                }
+            } else {
+                // 如果是新商品，添加到购物车
+                cartItems.push({ 
+                    name, 
+                    price, 
+                    imgSrc, 
+                    quantity 
+                });
+            }
+            
+            updateCart();
+            
+            // 添加动画效果
+            button.innerHTML = '✓ 已添加';
+            button.style.background = 'var(--grass-shadow)';
+            setTimeout(() => {
+                button.innerHTML = '加入购物车';
+                button.style.background = 'var(--team-blue)';
+            }, 1000);
+        }
+
+        function updateCart() {
+            const cartItemsContainer = document.querySelector('.cart-items');
+            const cartCountElement = document.querySelector('.cart-count');
+            const subtotalElement = document.querySelector('.subtotal-price');
+            const totalPriceElement = document.querySelector('.total-price');
+            const discountInfoElement = document.querySelector('.discount-info');
+            
+            // 更新购物车数量（所有商品数量的总和）
+            cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            cartCountElement.textContent = cartCount;
+            
+            // 更新购物车内容
+            cartItemsContainer.innerHTML = cartItems.map((item, index) => `
+                <div class="cart-item">
+                    <img src="${item.imgSrc}" alt="${item.name}">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">¥${item.price.toFixed(2)} × ${item.quantity}</div>
+                        <div class="cart-item-subtotal">小计: ¥${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                    <div class="cart-item-remove" onclick="removeFromCart(${index})">×</div>
+                </div>
+            `).join('');
+            
+            // 计算商品总额
+            const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            
+            // 计算优惠金额（满1000减100，只减一次）
+            const discount = subtotal >= 1000 ? 100 : 0;
+            
+            // 计算实付金额
+            const total = subtotal - discount;
+            
+            // 更新显示
+            subtotalElement.textContent = `¥${subtotal.toFixed(2)}`;
+            
+            if (discount > 0) {
+                discountInfoElement.textContent = `满1000减100优惠: -¥${discount.toFixed(2)}`;
+                discountInfoElement.style.display = 'block';
+            } else {
+                discountInfoElement.style.display = 'none';
+            }
+            
+            totalPriceElement.textContent = `¥${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cartItems.splice(index, 1);
+            updateCart();
+        }
+
+        // 更新购物车相关函数
+        function changeQuantity(btn, delta) {
+            const input = btn.parentElement.querySelector('input');
+            let value = parseInt(input.value) + delta;
+            value = Math.max(1, Math.min(100, value)); // 限制在1-100之间
+            input.value = value;
+        }
+
+        function validateQuantity(input) {
+            let value = parseInt(input.value);
+            value = Math.max(1, Math.min(100, value)); // 限制在1-100之间
+            input.value = value;
+        }
+
+        // 添加返回顶部功能
+        window.onscroll = function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 300) { // 滚动超过300px显示按钮
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // 平滑滚动
+            });
+        }
+
+        let currentSlide = 0;
+        const totalSlides = 4;
+
+        function moveSlider(direction) {
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            const wrapper = document.querySelector('.slider-wrapper');
+            wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // 更新圆点状态
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // 添加触摸滑动支持
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        const slider = document.querySelector('.slider-container');
+        slider.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        slider.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) { // 最小滑动距离
+                moveSlider(diff > 0 ? 1 : -1);
+            }
+        });
+
+        function showPaymentSuccess() {
+            const successMessage = document.querySelector('.payment-success');
+            successMessage.classList.add('show');
+            
+            // 3秒后自动隐藏提示
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+                // 清空购物车
+                cartItems = [];
+                updateCart();
+                // 关闭购物车面板
+                document.querySelector('.cart-panel').classList.remove('active');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
